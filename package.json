@@ -1,0 +1,20 @@
+{
+  "name": "chatgpt-codex-projects",
+  "version": "1.0.0",
+  "description": "Een lichtgewicht webapplicatie om ChatGPT op afstand te gebruiken via een eigen API-sleutel.",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "private": true,
+  "scripts": {
+    "start": "node src/server.js",
+    "lint": "node --check src/server.js"
+  },
+  "keywords": [
+    "chatgpt",
+    "openai",
+    "proxy",
+    "node"
+  ],
+  "author": "",
+  "license": "MIT"
+}

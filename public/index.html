@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ChatGPT op afstand</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="top-bar">
+      <div class="container">
+        <h1>ChatGPT op afstand</h1>
+        <p>
+          Gebruik deze eenvoudige interface om via je eigen OpenAI-sleutel gesprekken te voeren met ChatGPT.
+          Je volledige gesprek blijft lokaal in je browser opgeslagen.
+        </p>
+      </div>
+    </header>
+    <main class="container">
+      <section class="settings" aria-labelledby="settings-title">
+        <h2 id="settings-title">Gespreksinstellingen</h2>
+        <div class="field">
+          <label class="field__label" for="system-message">Systeembericht</label>
+          <textarea
+            id="system-message"
+            class="field__textarea"
+            rows="3"
+            placeholder="Beschrijf de rol of toon van ChatGPT"
+          ></textarea>
+          <p class="field__hint">
+            Dit bericht bepaalt de context van het gesprek. Laat het leeg voor de standaardinstructie.
+          </p>
+        </div>
+        <div class="field field--inline">
+          <label class="field__label" for="temperature">Creativiteit (<span id="temperature-value">0.7</span>)</label>
+          <input
+            id="temperature"
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value="0.7"
+            aria-describedby="temperature-hint"
+          />
+          <p class="field__hint" id="temperature-hint">
+            Een lagere waarde maakt de antwoorden gerichter, een hogere waarde creatiever.
+          </p>
+        </div>
+      </section>
+
+      <section class="chat" aria-labelledby="chat-title">
+        <div class="chat__header">
+          <h2 id="chat-title">Gesprek</h2>
+          <button type="button" id="clear-chat" class="ghost-button">Leeg gesprek</button>
+        </div>
+        <div id="chat-log" class="chat__log" aria-live="polite" aria-atomic="false"></div>
+        <form id="chat-form" class="chat__form">
+          <label class="field__label" for="user-message">Je bericht</label>
+          <textarea
+            id="user-message"
+            class="field__textarea"
+            rows="4"
+            placeholder="Stel een vraag of geef een instructie"
+            required
+          ></textarea>
+          <div class="form-actions">
+            <button type="submit" class="primary-button">Verstuur</button>
+          </div>
+          <p id="status" class="status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>
+          Vergeet niet om je <code>OPENAI_API_KEY</code> als omgevingsvariabele op de server in te stellen voordat je de applicatie start.
+        </p>
+      </div>
+    </footer>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
