@@ -11,6 +11,9 @@ const homeDescriptionInput = document.querySelector('#home-description');
 const usageDetailsInput = document.querySelector('#usage-details');
 const locationInput = document.querySelector('#location-climate');
 const dataSourcesInput = document.querySelector('#data-sources');
+const homeFilesInput = document.querySelector('#home-files');
+const usageFilesInput = document.querySelector('#usage-files');
+const weatherFilesInput = document.querySelector('#weather-files');
 const buildPromptButton = document.querySelector('#build-gasfree-prompt');
 const temperatureInput = document.querySelector('#temperature');
 const temperatureValue = document.querySelector('#temperature-value');
@@ -193,11 +196,20 @@ temperatureInput.addEventListener('input', () => {
 });
 
 if (buildPromptButton) {
-  buildPromptButton.addEventListener('click', () => {
-    const prompt = buildGasFreePrompt();
-    messageInput.value = prompt;
-    messageInput.focus();
-    setStatus('Adviesprompt gegenereerd. Pas gerust aan en verstuur.', 'info');
+  buildPromptButton.addEventListener('click', async () => {
+    try {
+      buildPromptButton.disabled = true;
+      setStatus('Bestanden lezen en prompt genereren...');
+      const prompt = await buildGasFreePrompt();
+      messageInput.value = prompt;
+      messageInput.focus();
+      setStatus('Adviesprompt gegenereerd. Pas gerust aan en verstuur.', 'info');
+    } catch (error) {
+      console.error('Kon adviesprompt niet genereren:', error);
+      setStatus(error.message || 'Er ging iets mis bij het genereren van de prompt.', 'error');
+    } finally {
+      buildPromptButton.disabled = false;
+    }
   });
 }
 
@@ -290,7 +302,7 @@ function setStatus(message, type = 'info') {
   statusLine.dataset.type = type;
 }
 
-function buildGasFreePrompt() {
+async function buildGasFreePrompt() {
   const description = normalizeInput(homeDescriptionInput?.value, '');
   const usage = normalizeInput(usageDetailsInput?.value, '');
   const location = normalizeInput(
@@ -301,12 +313,20 @@ function buildGasFreePrompt() {
     dataSourcesInput?.value,
     'Geen online data meegeleverd; baseer je op generieke aannames en benoem welke data nog nodig is.'
   );
+  const [homeFiles, usageFiles, weatherFiles] = await Promise.all([
+    readFilesAsText(homeFilesInput?.files),
+    readFilesAsText(usageFilesInput?.files),
+    readFilesAsText(weatherFilesInput?.files),
+  ]);
 
   const bulletLines = [
     `- Woning: ${description || 'Niet opgegeven; vraag naar bouwjaar, woningtype, isolatie en oppervlak.'}`,
     `- Verbruik/installaties: ${usage || 'Niet opgegeven; vraag naar jaarverbruik gas/elektra en huidige installaties.'}`,
     `- Locatie/klimaat: ${location}`,
     `- Data/voorkeuren: ${dataSources}`,
+    `- Bijlagen woning: ${homeFiles || 'Geen bestanden toegevoegd.'}`,
+    `- Bijlagen verbruik: ${usageFiles || 'Geen bestanden toegevoegd.'}`,
+    `- Bijlagen weerdata: ${weatherFiles || 'Geen bestanden toegevoegd.'}`,
   ].join('\n');
 
   return [
@@ -324,4 +344,29 @@ function buildGasFreePrompt() {
 function normalizeInput(value, fallback = '') {
   const trimmed = typeof value === 'string' ? value.trim() : '';
   return trimmed || fallback;
+}
+
+async function readFilesAsText(fileList) {
+  if (!fileList || fileList.length === 0) {
+    return '';
+  }
+
+  const MAX_BYTES = 200_000; // 200 kB per bestand
+  const readers = Array.from(fileList).map(
+    (file) =>
+      new Promise((resolve, reject) => {
+        if (file.size > MAX_BYTES) {
+          resolve(`${file.name}: bestand is te groot (${Math.round(file.size / 1024)} kB), upload een kleinere export.`);
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => resolve(`${file.name}:\n${String(reader.result).trim()}`);
+        reader.onerror = () => reject(new Error(`Kon ${file.name} niet lezen.`));
+        reader.readAsText(file);
+      })
+  );
+
+  const contents = await Promise.all(readers);
+  return contents.filter(Boolean).join('\n---\n');
 }

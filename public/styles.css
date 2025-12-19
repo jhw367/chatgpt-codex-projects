@@ -145,6 +145,12 @@ main.container {
   gap: 0.4rem;
 }
 
+.helper__uploads {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -360,6 +366,10 @@ input[type='range'] {
   }
 
   .helper__fields {
+    grid-template-columns: 1fr;
+  }
+
+  .helper__uploads {
     grid-template-columns: 1fr;
   }
 

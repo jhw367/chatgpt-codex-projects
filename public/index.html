@@ -96,6 +96,23 @@
               ></textarea>
             </div>
           </div>
+          <div class="helper__uploads">
+            <div class="field">
+              <label class="field__label" for="home-files">Upload woningbeschrijving (txt/csv)</label>
+              <input id="home-files" type="file" accept=".txt,.csv,.json" multiple />
+              <p class="field__hint">Bijv. bouwkundig rapport of EP-online export.</p>
+            </div>
+            <div class="field">
+              <label class="field__label" for="usage-files">Upload verbruik (HomeWizard e.d.)</label>
+              <input id="usage-files" type="file" accept=".txt,.csv,.json" multiple />
+              <p class="field__hint">Gebruik de export uit je slimme meter/energiedashboard.</p>
+            </div>
+            <div class="field">
+              <label class="field__label" for="weather-files">Upload weers-/klimaatdata</label>
+              <input id="weather-files" type="file" accept=".txt,.csv,.json" multiple />
+              <p class="field__hint">Bijv. KNMI of andere online dataset die je hebt gedownload.</p>
+            </div>
+          </div>
           <div class="helper__actions">
             <button type="button" id="build-gasfree-prompt" class="primary-button">Genereer adviesprompt</button>
             <p class="field__hint">
