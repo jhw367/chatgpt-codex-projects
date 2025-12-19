@@ -7,6 +7,11 @@ const chatForm = document.querySelector('#chat-form');
 const messageInput = document.querySelector('#user-message');
 const statusLine = document.querySelector('#status');
 const systemInput = document.querySelector('#system-message');
+const homeDescriptionInput = document.querySelector('#home-description');
+const usageDetailsInput = document.querySelector('#usage-details');
+const locationInput = document.querySelector('#location-climate');
+const dataSourcesInput = document.querySelector('#data-sources');
+const buildPromptButton = document.querySelector('#build-gasfree-prompt');
 const temperatureInput = document.querySelector('#temperature');
 const temperatureValue = document.querySelector('#temperature-value');
 const clearButton = document.querySelector('#clear-chat');
@@ -187,6 +192,15 @@ temperatureInput.addEventListener('input', () => {
   persistState();
 });
 
+if (buildPromptButton) {
+  buildPromptButton.addEventListener('click', () => {
+    const prompt = buildGasFreePrompt();
+    messageInput.value = prompt;
+    messageInput.focus();
+    setStatus('Adviesprompt gegenereerd. Pas gerust aan en verstuur.', 'info');
+  });
+}
+
 async function requestCompletion(lastUserMessage) {
   setLoading(true);
   setStatus('Antwoord opvragen...');
@@ -274,4 +288,40 @@ function setLoading(isLoading) {
 function setStatus(message, type = 'info') {
   statusLine.textContent = message;
   statusLine.dataset.type = type;
+}
+
+function buildGasFreePrompt() {
+  const description = normalizeInput(homeDescriptionInput?.value, '');
+  const usage = normalizeInput(usageDetailsInput?.value, '');
+  const location = normalizeInput(
+    locationInput?.value,
+    'Geen locatie opgegeven; gebruik een typisch Nederlands klimaatprofiel en netbelasting.'
+  );
+  const dataSources = normalizeInput(
+    dataSourcesInput?.value,
+    'Geen online data meegeleverd; baseer je op generieke aannames en benoem welke data nog nodig is.'
+  );
+
+  const bulletLines = [
+    `- Woning: ${description || 'Niet opgegeven; vraag naar bouwjaar, woningtype, isolatie en oppervlak.'}`,
+    `- Verbruik/installaties: ${usage || 'Niet opgegeven; vraag naar jaarverbruik gas/elektra en huidige installaties.'}`,
+    `- Locatie/klimaat: ${location}`,
+    `- Data/voorkeuren: ${dataSources}`,
+  ].join('\n');
+
+  return [
+    'Je bent een Nederlandse energie-adviseur gespecialiseerd in aardgasvrij wonen.',
+    'Stel een geoptimaliseerde routekaart op met concrete maatregelen, volgorde, investeringsindicaties en verwachte besparing.',
+    'Gebruik publieke weerdata, netbelasting en typische woningprofielen om hiaten op te vullen en stel gerichte vervolgvragen waar nodig.',
+    'Beschikbare input:',
+    bulletLines,
+    "Lever drie scenario's: (1) snelle winst/laag budget, (2) gebalanceerd, (3) maximaal toekomstbestendig.",
+    'Per scenario: isolatie, ventilatie, verwarming (all-electric of hybride warmtepomp), opwek (PV), opslag/regeling, subsidies (ISDE e.d.), terugverdientijd, CO₂-reductie, comfortimpact en aandachtspunten rond netcongestie.',
+    'Sluit af met benodigde onderzoeken/vergunningen, volgorde van stappen, checklist voor aannemer/installateur en meetpunten om voortgang te bewaken.',
+  ].join('\n');
+}
+
+function normalizeInput(value, fallback = '') {
+  const trimmed = typeof value === 'string' ? value.trim() : '';
+  return trimmed || fallback;
 }

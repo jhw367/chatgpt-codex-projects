@@ -46,6 +46,64 @@
             Een lagere waarde maakt de antwoorden gerichter, een hogere waarde creatiever.
           </p>
         </div>
+
+        <div class="helper" aria-labelledby="helper-title">
+          <div class="helper__intro">
+            <div>
+              <p class="helper__eyebrow">Praktische assistent</p>
+              <h3 id="helper-title">Gasvrij-adviesgenerator</h3>
+              <p>
+                Vul de kenmerken van je woning in en genereer een concrete vraag waarmee ChatGPT
+                geoptimaliseerde, gasvrije oplossingen kan voorstellen.
+              </p>
+            </div>
+          </div>
+          <div class="helper__fields">
+            <div class="field">
+              <label class="field__label" for="home-description">Woningbeschrijving</label>
+              <textarea
+                id="home-description"
+                class="field__textarea"
+                rows="2"
+                placeholder="Bouwjaar, woningtype, isolatieniveau, oppervlak, aantal bewoners"
+              ></textarea>
+            </div>
+            <div class="field">
+              <label class="field__label" for="usage-details">Verbruik en installaties</label>
+              <textarea
+                id="usage-details"
+                class="field__textarea"
+                rows="2"
+                placeholder="Jaarverbruik gas/elektra, huidige ketel, ventilatie, zonnepanelen, vloerverwarming"
+              ></textarea>
+            </div>
+            <div class="field field--inline">
+              <label class="field__label" for="location-climate">Locatie of klimaatprofiel</label>
+              <input
+                id="location-climate"
+                type="text"
+                class="field__textarea"
+                placeholder="Plaats of postcode voor weers- en netbelasting"
+              />
+            </div>
+            <div class="field">
+              <label class="field__label" for="data-sources">Online data en voorkeuren</label>
+              <textarea
+                id="data-sources"
+                class="field__textarea"
+                rows="2"
+                placeholder="Links naar slimme meter-export, ISDE/EP-online rapport, budget, comfortwensen"
+              ></textarea>
+            </div>
+          </div>
+          <div class="helper__actions">
+            <button type="button" id="build-gasfree-prompt" class="primary-button">Genereer adviesprompt</button>
+            <p class="field__hint">
+              De knop vult het berichtveld hieronder met een uitgewerkte vraag. Je kunt de tekst nog aanpassen
+              voordat je deze verstuurt.
+            </p>
+          </div>
+        </div>
       </section>
 
       <section class="chat" aria-labelledby="chat-title">

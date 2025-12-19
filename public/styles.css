@@ -104,6 +104,47 @@ main.container {
   gap: 1.5rem;
 }
 
+.helper {
+  border: 1px dashed var(--border-strong);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  background: rgba(37, 99, 235, 0.04);
+  display: grid;
+  gap: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .helper {
+    background: rgba(96, 165, 250, 0.08);
+  }
+}
+
+.helper__intro {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.helper__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  font-size: 0.8rem;
+  margin: 0 0 0.25rem;
+  color: var(--accent-strong);
+}
+
+.helper__fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.helper__actions {
+  display: grid;
+  gap: 0.4rem;
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -316,6 +357,10 @@ input[type='range'] {
   .settings,
   .chat {
     padding: 1.5rem;
+  }
+
+  .helper__fields {
+    grid-template-columns: 1fr;
   }
 
   .chat__log {
