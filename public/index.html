@@ -3,154 +3,59 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ChatGPT op afstand</title>
+    <title>Weer in Zeewolde</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="top-bar">
       <div class="container">
-        <h1>ChatGPT op afstand</h1>
+        <p class="eyebrow">Live weeroverzicht</p>
+        <h1>Weer in Zeewolde</h1>
         <p>
-          Gebruik deze eenvoudige interface om via je eigen OpenAI-sleutel gesprekken te voeren met ChatGPT.
-          Je volledige gesprek blijft lokaal in je browser opgeslagen.
+          Controleer in één oogopslag de huidige temperatuur, neerslag en wind voor Zeewolde. De gegevens
+          worden automatisch opgehaald bij Open-Meteo en regelmatig bijgewerkt.
         </p>
       </div>
     </header>
+
     <main class="container">
-      <section class="settings" aria-labelledby="settings-title">
-        <h2 id="settings-title">Gespreksinstellingen</h2>
-        <div class="field">
-          <label class="field__label" for="system-message">Systeembericht</label>
-          <textarea
-            id="system-message"
-            class="field__textarea"
-            rows="3"
-            placeholder="Beschrijf de rol of toon van ChatGPT"
-          ></textarea>
-          <p class="field__hint">
-            Dit bericht bepaalt de context van het gesprek. Laat het leeg voor de standaardinstructie.
-          </p>
-        </div>
-        <div class="field field--inline">
-          <label class="field__label" for="temperature">Creativiteit (<span id="temperature-value">0.7</span>)</label>
-          <input
-            id="temperature"
-            type="range"
-            min="0"
-            max="1"
-            step="0.1"
-            value="0.7"
-            aria-describedby="temperature-hint"
-          />
-          <p class="field__hint" id="temperature-hint">
-            Een lagere waarde maakt de antwoorden gerichter, een hogere waarde creatiever.
-          </p>
+      <section class="panel panel--wide" aria-live="polite">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Huidige omstandigheden</p>
+            <h2>Nu in Zeewolde</h2>
+            <p id="last-updated" class="muted">Laden...</p>
+          </div>
+          <button id="refresh" class="ghost-button" type="button">Vernieuw</button>
         </div>
 
-        <div class="helper" aria-labelledby="helper-title">
-          <div class="helper__intro">
-            <div>
-              <p class="helper__eyebrow">Praktische assistent</p>
-              <h3 id="helper-title">Gasvrij-adviesgenerator</h3>
-              <p>
-                Vul de kenmerken van je woning in en genereer een concrete vraag waarmee ChatGPT
-                geoptimaliseerde, gasvrije oplossingen kan voorstellen.
-              </p>
-            </div>
+        <div class="weather-grid">
+          <div class="weather-card" id="temperature-card">
+            <p class="eyebrow">Temperatuur</p>
+            <h3 class="value" id="temperature-value">--°C</h3>
+            <p class="muted">Gemeten op 2 meter hoogte</p>
           </div>
-          <div class="helper__fields">
-            <div class="field">
-              <label class="field__label" for="home-description">Woningbeschrijving</label>
-              <textarea
-                id="home-description"
-                class="field__textarea"
-                rows="2"
-                placeholder="Bouwjaar, woningtype, isolatieniveau, oppervlak, aantal bewoners"
-              ></textarea>
-            </div>
-            <div class="field">
-              <label class="field__label" for="usage-details">Verbruik en installaties</label>
-              <textarea
-                id="usage-details"
-                class="field__textarea"
-                rows="2"
-                placeholder="Jaarverbruik gas/elektra, huidige ketel, ventilatie, zonnepanelen, vloerverwarming"
-              ></textarea>
-            </div>
-            <div class="field field--inline">
-              <label class="field__label" for="location-climate">Locatie of klimaatprofiel</label>
-              <input
-                id="location-climate"
-                type="text"
-                class="field__textarea"
-                placeholder="Plaats of postcode voor weers- en netbelasting"
-              />
-            </div>
-            <div class="field">
-              <label class="field__label" for="data-sources">Online data en voorkeuren</label>
-              <textarea
-                id="data-sources"
-                class="field__textarea"
-                rows="2"
-                placeholder="Links naar slimme meter-export, ISDE/EP-online rapport, budget, comfortwensen"
-              ></textarea>
-            </div>
-          </div>
-          <div class="helper__uploads">
-            <div class="field">
-              <label class="field__label" for="home-files">Upload woningbeschrijving (txt/csv)</label>
-              <input id="home-files" type="file" accept=".txt,.csv,.json" multiple />
-              <p class="field__hint">Bijv. bouwkundig rapport of EP-online export.</p>
-            </div>
-            <div class="field">
-              <label class="field__label" for="usage-files">Upload verbruik (HomeWizard e.d.)</label>
-              <input id="usage-files" type="file" accept=".txt,.csv,.json" multiple />
-              <p class="field__hint">Gebruik de export uit je slimme meter/energiedashboard.</p>
-            </div>
-            <div class="field">
-              <label class="field__label" for="weather-files">Upload weers-/klimaatdata</label>
-              <input id="weather-files" type="file" accept=".txt,.csv,.json" multiple />
-              <p class="field__hint">Bijv. KNMI of andere online dataset die je hebt gedownload.</p>
-            </div>
-          </div>
-          <div class="helper__actions">
-            <button type="button" id="build-gasfree-prompt" class="primary-button">Genereer adviesprompt</button>
-            <p class="field__hint">
-              De knop vult het berichtveld hieronder met een uitgewerkte vraag. Je kunt de tekst nog aanpassen
-              voordat je deze verstuurt.
-            </p>
-          </div>
-        </div>
-      </section>
 
-      <section class="chat" aria-labelledby="chat-title">
-        <div class="chat__header">
-          <h2 id="chat-title">Gesprek</h2>
-          <button type="button" id="clear-chat" class="ghost-button">Leeg gesprek</button>
-        </div>
-        <div id="chat-log" class="chat__log" aria-live="polite" aria-atomic="false"></div>
-        <form id="chat-form" class="chat__form">
-          <label class="field__label" for="user-message">Je bericht</label>
-          <textarea
-            id="user-message"
-            class="field__textarea"
-            rows="4"
-            placeholder="Stel een vraag of geef een instructie"
-            required
-          ></textarea>
-          <div class="form-actions">
-            <button type="submit" class="primary-button">Verstuur</button>
+          <div class="weather-card" id="precip-card">
+            <p class="eyebrow">Regen</p>
+            <h3 class="value" id="rain-value">-- mm</h3>
+            <p class="muted">Instantane regenintensiteit</p>
           </div>
-          <p id="status" class="status" role="status" aria-live="polite"></p>
-        </form>
+
+          <div class="weather-card" id="wind-card">
+            <p class="eyebrow">Wind</p>
+            <h3 class="value" id="wind-speed">-- km/u</h3>
+            <p class="muted"><span id="wind-direction">--</span></p>
+          </div>
+        </div>
+
+        <div class="notice" id="status" role="status"></div>
       </section>
     </main>
 
     <footer class="footer">
       <div class="container">
-        <p>
-          Vergeet niet om je <code>OPENAI_API_KEY</code> als omgevingsvariabele op de server in te stellen voordat je de applicatie start.
-        </p>
+        <p class="muted">Bron: Open-Meteo · Locatie: Zeewolde, Nederland (52.33°N, 5.54°E)</p>
       </div>
     </footer>
 
