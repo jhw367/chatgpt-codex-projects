@@ -5,37 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>LLM Knowledge Base Blueprint</title>
+    <title>LLM Knowledge Base Starter</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="hero">
       <div class="container">
-        <p class="eyebrow">Mobile-first blueprint</p>
-        <h1>LLM Knowledge Base die werkt op iPhone 14 Pro Max</h1>
+        <p class="eyebrow">Voor beginners</p>
+        <h1>Zo bouw je een LLM Knowledge Base (ook op iPhone 14 Pro Max)</h1>
         <p class="lead">
-          Dit dashboard vertaalt je workflow naar een concrete architectuur: ingest → compile → Q&A → output → health
-          checks, met een stack die je ook mobiel prettig kunt gebruiken.
+          Geen jargon, wel stappen: eerst lokaal draaien, daarna private zetten, daarna pas uitbreiden.
         </p>
       </div>
     </header>
 
     <main class="container stack">
-      <section class="panel" aria-labelledby="architecture-title">
-        <h2 id="architecture-title">1) Architectuur (minimaal product)</h2>
-        <ol class="timeline">
-          <li><strong>raw/</strong>: bronmateriaal (artikelen, PDF, datasets, repo-notes, afbeeldingen).</li>
-          <li><strong>compile/</strong>: LLM converteert naar wiki-artikelen met backlinks en indexen.</li>
-          <li><strong>query/</strong>: agent voert vragen uit en schrijft antwoorden terug als .md/.marp/.png.</li>
-          <li><strong>lint/</strong>: quality checks op inconsistenties, ontbrekende metadata en nieuwe kansen.</li>
-          <li><strong>publish/</strong>: statische viewer + API, bereikbaar op je iPhone.</li>
-        </ol>
+      <section class="panel" aria-labelledby="quickstart-title">
+        <h2 id="quickstart-title">Snelle start (5 stappen)</h2>
+        <ol id="quickstart-list" class="timeline"></ol>
+      </section>
+
+      <section class="panel" aria-labelledby="private-title">
+        <div class="panel-head">
+          <h2 id="private-title">Private zetten (aanrader)</h2>
+          <span id="private-pill" class="pill" aria-live="polite">Mode laden...</span>
+        </div>
+        <ol id="private-list" class="timeline"></ol>
       </section>
 
       <section class="panel" aria-labelledby="iphone-title">
         <div class="panel-head">
-          <h2 id="iphone-title">2) iPhone 14 Pro Max bereikbaar maken</h2>
-          <button id="copy-checklist" class="button" type="button">Kopieer checklist</button>
+          <h2 id="iphone-title">iPhone checklist</h2>
+          <button id="copy-checklist" class="button" type="button">Kopieer</button>
         </div>
         <ul id="iphone-checklist" class="checklist"></ul>
         <p id="status" class="muted" role="status" aria-live="polite"></p>
@@ -43,37 +44,15 @@
 
       <section class="panel" aria-labelledby="tree-title">
         <div class="panel-head">
-          <h2 id="tree-title">3) Starter mappenstructuur</h2>
-          <button id="copy-tree" class="button button--ghost" type="button">Kopieer structuur</button>
+          <h2 id="tree-title">Starter mappenstructuur</h2>
+          <button id="copy-tree" class="button button--ghost" type="button">Kopieer</button>
         </div>
         <pre id="tree-output" class="code"></pre>
-      </section>
-
-      <section class="panel" aria-labelledby="stack-title">
-        <h2 id="stack-title">4) Aanbevolen stack</h2>
-        <div class="grid">
-          <article class="card">
-            <h3>Opslag</h3>
-            <p>Git repo met markdown + lokale afbeeldingen; automatische versiegeschiedenis.</p>
-          </article>
-          <article class="card">
-            <h3>Orchestratie</h3>
-            <p>CLI-agent met taken: ingest, compile, ask, lint, publish.</p>
-          </article>
-          <article class="card">
-            <h3>Zoeken</h3>
-            <p>Snelle index (BM25/vector hybride) als optionele tool voor de agent.</p>
-          </article>
-          <article class="card">
-            <h3>Mobiel</h3>
-            <p>PWA of responsieve webviewer, vastgezet op homescreen via Safari.</p>
-          </article>
-        </div>
       </section>
     </main>
 
     <footer class="container footer">
-      <p>Tip: begin klein (±50 documenten), en automatiseer pas daarna uitgebreidere linting of fine-tuning.</p>
+      <p>Tip: begin met 20 documenten, laat de LLM pas daarna zelf linting en uitbreidingen doen.</p>
     </footer>
 
     <script src="app.js" type="module"></script>

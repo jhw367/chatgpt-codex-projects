@@ -1,26 +1,63 @@
-# LLM Knowledge Base (mobile-first)
+# LLM Knowledge Base Starter (mobile-first)
 
-Een compacte Node.js-app die een blueprint toont voor het bouwen van een **LLM-gedreven kennisbank** die goed werkt op desktop én iPhone 14 Pro Max.
+Deze app is een **eenvoudige startpagina voor leken** om een LLM-gedreven kennisbank op te zetten en te gebruiken vanaf desktop en iPhone 14 Pro Max.
 
-## Wat deze app laat zien
+## Wat je krijgt
 
-- Een praktisch stappenplan voor de workflow: `raw/` → compilatie naar wiki → Q&A → outputs → linting.
-- Een mobiele checklist om je stack veilig/publiceerbaar te maken voor iPhone-gebruik.
-- Een kopieerbare starter mappenstructuur voor je knowledge-base repository.
+- Een webpagina met duidelijke stappen (zonder veel jargon).
+- Een iPhone-checklist en kopieerbare mappenstructuur.
+- Een Node.js backend met `/api/chat` relay.
+- Optionele **private mode** met Basic Auth.
 
-## Starten
+---
 
-```bash
-npm start
+## 1) Lokaal draaien (stap voor stap)
+
+1. Installeer **Node.js 18+**.
+2. Clone deze repo.
+3. Maak een `.env` bestand (zie voorbeeld hieronder).
+4. Start de app:
+
+   ```bash
+   npm start
+   ```
+
+5. Open in je browser: <http://localhost:3000>
+
+Voor iPhone in je thuisnetwerk: open `http://<jouw-laptop-ip>:3000` op je iPhone.
+
+---
+
+## 2) .env voorbeeld
+
+```env
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini
+PORT=3000
+
+# Private mode (optioneel, sterk aanbevolen zodra je extern publiceert)
+PRIVATE_MODE=true
+BASIC_AUTH_USER=admin
+BASIC_AUTH_PASSWORD=kies-een-sterk-wachtwoord
 ```
 
-Open daarna <http://localhost:3000>.
+> Als `PRIVATE_MODE=true` staat, vraagt de app om gebruikersnaam/wachtwoord voordat pagina/API bereikbaar zijn.
 
-## Beschikbare scripts
+---
 
-- `npm start` – start de server.
+## 3) Private zetten i.p.v. public
+
+Minimaal advies (simpel en effectief):
+
+1. Zet `PRIVATE_MODE=true` + Basic Auth variabelen in `.env`.
+2. Gebruik HTTPS reverse proxy (bijv. Caddy/Tailscale/Cloudflare Tunnel).
+3. Deel alleen je beveiligde URL.
+4. Houd je API key altijd server-side (nooit in frontend code).
+
+---
+
+## 4) Scripts
+
+- `npm start` – start de HTTP-server.
 - `npm run lint` – syntaxischeck van de server (`node --check src/server.js`).
 
-## Opmerking
-
-De backend ondersteunt nog steeds `/api/chat` als relay-endpoint voor OpenAI, zodat je deze basis later kunt uitbreiden met echte ingest/compile/ask tooling.
