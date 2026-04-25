@@ -2,61 +2,78 @@
 <html lang="nl">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Weer in Zeewolde</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>LLM Knowledge Base Blueprint</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header class="top-bar">
+    <header class="hero">
       <div class="container">
-        <p class="eyebrow">Live weeroverzicht</p>
-        <h1>Weer in Zeewolde</h1>
-        <p>
-          Controleer in één oogopslag de huidige temperatuur, neerslag en wind voor Zeewolde. De gegevens
-          worden automatisch opgehaald bij Open-Meteo en regelmatig bijgewerkt.
+        <p class="eyebrow">Mobile-first blueprint</p>
+        <h1>LLM Knowledge Base die werkt op iPhone 14 Pro Max</h1>
+        <p class="lead">
+          Dit dashboard vertaalt je workflow naar een concrete architectuur: ingest → compile → Q&A → output → health
+          checks, met een stack die je ook mobiel prettig kunt gebruiken.
         </p>
       </div>
     </header>
 
-    <main class="container">
-      <section class="panel panel--wide" aria-live="polite">
-        <div class="panel__header">
-          <div>
-            <p class="eyebrow">Huidige omstandigheden</p>
-            <h2>Nu in Zeewolde</h2>
-            <p id="last-updated" class="muted">Laden...</p>
-          </div>
-          <button id="refresh" class="ghost-button" type="button">Vernieuw</button>
+    <main class="container stack">
+      <section class="panel" aria-labelledby="architecture-title">
+        <h2 id="architecture-title">1) Architectuur (minimaal product)</h2>
+        <ol class="timeline">
+          <li><strong>raw/</strong>: bronmateriaal (artikelen, PDF, datasets, repo-notes, afbeeldingen).</li>
+          <li><strong>compile/</strong>: LLM converteert naar wiki-artikelen met backlinks en indexen.</li>
+          <li><strong>query/</strong>: agent voert vragen uit en schrijft antwoorden terug als .md/.marp/.png.</li>
+          <li><strong>lint/</strong>: quality checks op inconsistenties, ontbrekende metadata en nieuwe kansen.</li>
+          <li><strong>publish/</strong>: statische viewer + API, bereikbaar op je iPhone.</li>
+        </ol>
+      </section>
+
+      <section class="panel" aria-labelledby="iphone-title">
+        <div class="panel-head">
+          <h2 id="iphone-title">2) iPhone 14 Pro Max bereikbaar maken</h2>
+          <button id="copy-checklist" class="button" type="button">Kopieer checklist</button>
         </div>
+        <ul id="iphone-checklist" class="checklist"></ul>
+        <p id="status" class="muted" role="status" aria-live="polite"></p>
+      </section>
 
-        <div class="weather-grid">
-          <div class="weather-card" id="temperature-card">
-            <p class="eyebrow">Temperatuur</p>
-            <h3 class="value" id="temperature-value">--°C</h3>
-            <p class="muted">Gemeten op 2 meter hoogte</p>
-          </div>
-
-          <div class="weather-card" id="precip-card">
-            <p class="eyebrow">Regen</p>
-            <h3 class="value" id="rain-value">-- mm</h3>
-            <p class="muted">Instantane regenintensiteit</p>
-          </div>
-
-          <div class="weather-card" id="wind-card">
-            <p class="eyebrow">Wind</p>
-            <h3 class="value" id="wind-speed">-- km/u</h3>
-            <p class="muted"><span id="wind-direction">--</span></p>
-          </div>
+      <section class="panel" aria-labelledby="tree-title">
+        <div class="panel-head">
+          <h2 id="tree-title">3) Starter mappenstructuur</h2>
+          <button id="copy-tree" class="button button--ghost" type="button">Kopieer structuur</button>
         </div>
+        <pre id="tree-output" class="code"></pre>
+      </section>
 
-        <div class="notice" id="status" role="status"></div>
+      <section class="panel" aria-labelledby="stack-title">
+        <h2 id="stack-title">4) Aanbevolen stack</h2>
+        <div class="grid">
+          <article class="card">
+            <h3>Opslag</h3>
+            <p>Git repo met markdown + lokale afbeeldingen; automatische versiegeschiedenis.</p>
+          </article>
+          <article class="card">
+            <h3>Orchestratie</h3>
+            <p>CLI-agent met taken: ingest, compile, ask, lint, publish.</p>
+          </article>
+          <article class="card">
+            <h3>Zoeken</h3>
+            <p>Snelle index (BM25/vector hybride) als optionele tool voor de agent.</p>
+          </article>
+          <article class="card">
+            <h3>Mobiel</h3>
+            <p>PWA of responsieve webviewer, vastgezet op homescreen via Safari.</p>
+          </article>
+        </div>
       </section>
     </main>
 
-    <footer class="footer">
-      <div class="container">
-        <p class="muted">Bron: Open-Meteo · Locatie: Zeewolde, Nederland (52.33°N, 5.54°E)</p>
-      </div>
+    <footer class="container footer">
+      <p>Tip: begin klein (±50 documenten), en automatiseer pas daarna uitgebreidere linting of fine-tuning.</p>
     </footer>
 
     <script src="app.js" type="module"></script>

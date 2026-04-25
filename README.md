@@ -1,62 +1,26 @@
-# ChatGPT op afstand
+# LLM Knowledge Base (mobile-first)
 
-Een compacte Node.js-toepassing waarmee je via een eigen OpenAI API-sleutel een privé webinterface voor ChatGPT kunt hosten. De webapp bestaat uit een eenvoudige backend (zonder externe afhankelijkheden) die verzoeken doorstuurt naar de OpenAI Chat Completions API en een moderne frontend waar je het gesprek beheert.
+Een compacte Node.js-app die een blueprint toont voor het bouwen van een **LLM-gedreven kennisbank** die goed werkt op desktop én iPhone 14 Pro Max.
 
-## Functies
+## Wat deze app laat zien
 
-- 📡 **Eigen proxy** – verstuur gesprekken naar OpenAI via jouw server, zonder dat de sleutel in de browser terechtkomt.
-- 💬 **Intuïtieve chatinterface** – gespreksoverzicht, systeembericht, temperatuurregeling en statusfeedback.
-- 🔒 **Lokale opslag** – het volledige gesprek en je instellingen blijven in de browser (localStorage).
-- ⚙️ **Aanpasbaar model** – kies optioneel een ander model via de omgeving (`OPENAI_MODEL`).
+- Een praktisch stappenplan voor de workflow: `raw/` → compilatie naar wiki → Q&A → outputs → linting.
+- Een mobiele checklist om je stack veilig/publiceerbaar te maken voor iPhone-gebruik.
+- Een kopieerbare starter mappenstructuur voor je knowledge-base repository.
 
-## Aan de slag
+## Starten
 
-### Vereisten
+```bash
+npm start
+```
 
-- Node.js 18 of hoger
-- Een geldige OpenAI API-sleutel met toegang tot het gewenste chatmodel
+Open daarna <http://localhost:3000>.
 
-### Installatie
+## Beschikbare scripts
 
-1. Kopieer `.env.example` naar `.env` en vul je API-sleutel in:
+- `npm start` – start de server.
+- `npm run lint` – syntaxischeck van de server (`node --check src/server.js`).
 
-   ```bash
-   cp .env.example .env
-   # Bewerk .env en voeg je sleutel toe
-   ```
+## Opmerking
 
-2. Start de server:
-
-   ```bash
-   npm start
-   ```
-
-3. Open je browser en ga naar <http://localhost:3000> om te beginnen met chatten.
-
-### Beschikbare scripts
-
-- `npm start` – start de HTTP-server.
-- `npm run lint` – controleert de server op syntaxisfouten (`node --check`).
-
-## Omgevingsvariabelen
-
-| Variabele        | Beschrijving                                                                 | Standaard         |
-| ---------------- | ----------------------------------------------------------------------------- | ----------------- |
-| `OPENAI_API_KEY` | Vereist. Je persoonlijke OpenAI sleutel.                                      | –                 |
-| `OPENAI_MODEL`   | Optioneel. Het model dat je wilt gebruiken (bijv. `gpt-4o-mini`).             | `gpt-3.5-turbo`   |
-| `PORT`           | Optioneel. Poort waarop de server luistert.                                   | `3000`            |
-
-> De server laadt automatisch variabelen uit een `.env`-bestand in de hoofdmap als dat aanwezig is.
-
-## Hoe het werkt
-
-- De backend accepteert POST-verzoeken op `/api/chat` met een `messages`-array in het OpenAI formaat.
-- Het verzoek wordt doorgestuurd naar `https://api.openai.com/v1/chat/completions`.
-- De frontend bewaart het gesprek lokaal, zodat je pagina verversen zonder historie te verliezen.
-
-## Veiligheidsnotities
-
-- Houd je `.env`-bestand privé. Deel je API-sleutel nooit client-side.
-- Overweeg extra authenticatie wanneer je de server publiekelijk toegankelijk maakt.
-
-Veel chatplezier!
+De backend ondersteunt nog steeds `/api/chat` als relay-endpoint voor OpenAI, zodat je deze basis later kunt uitbreiden met echte ingest/compile/ask tooling.

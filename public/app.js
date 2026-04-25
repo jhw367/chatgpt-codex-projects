@@ -1,97 +1,82 @@
-const statusLine = document.querySelector('#status');
-const temperatureValue = document.querySelector('#temperature-value');
-const rainValue = document.querySelector('#rain-value');
-const windSpeedValue = document.querySelector('#wind-speed');
-const windDirectionValue = document.querySelector('#wind-direction');
-const lastUpdated = document.querySelector('#last-updated');
-const refreshButton = document.querySelector('#refresh');
+const checklistItems = [
+  'Host je wiki-viewer met HTTPS (Cloudflare Tunnel, Tailscale Funnel of VPS + Caddy).',
+  'Gebruik een subdomein zoals kb.jouwdomein.nl en activeer basic auth of SSO.',
+  'Maak de site responsive en stel viewport-fit=cover in voor de iPhone notch.',
+  'Voeg een /api/ask endpoint toe dat alleen server-side met je LLM provider praat.',
+  'Laat batch-jobs (ingest/compile/lint) als background worker draaien op je server.',
+  'Sla output op als markdown in git; toon changelog en backlinks in de webviewer.',
+  'Zet de webapp op homescreen via Safari (delen → Zet op beginscherm).',
+  'Gebruik dagelijkse snapshots/backups zodat je knowledge base herstelbaar blijft.',
+];
 
-const ENDPOINT =
-  'https://api.open-meteo.com/v1/forecast?latitude=52.33&longitude=5.54&current=temperature_2m,precipitation,rain,wind_speed_10m,wind_direction_10m&timezone=auto';
+const folderTree = `knowledge-base/
+├─ raw/
+│  ├─ articles/
+│  ├─ papers/
+│  ├─ datasets/
+│  └─ images/
+├─ wiki/
+│  ├─ concepts/
+│  ├─ entities/
+│  ├─ timelines/
+│  └─ index.md
+├─ outputs/
+│  ├─ answers/
+│  ├─ slides/
+│  └─ plots/
+├─ tools/
+│  ├─ ingest.js
+│  ├─ compile.js
+│  ├─ ask.js
+│  └─ lint.js
+└─ logs/`;
+
+const listElement = document.querySelector('#iphone-checklist');
+const treeElement = document.querySelector('#tree-output');
+const statusElement = document.querySelector('#status');
+const copyChecklistButton = document.querySelector('#copy-checklist');
+const copyTreeButton = document.querySelector('#copy-tree');
 
 init();
 
 function init() {
-  refreshButton?.addEventListener('click', fetchWeather);
-  fetchWeather();
+  renderChecklist();
+  treeElement.textContent = folderTree;
+
+  copyChecklistButton?.addEventListener('click', async () => {
+    const text = checklistItems.map((item, index) => `${index + 1}. ${item}`).join('\n');
+    await copyText(text, 'Checklist gekopieerd.');
+  });
+
+  copyTreeButton?.addEventListener('click', async () => {
+    await copyText(folderTree, 'Mappenstructuur gekopieerd.');
+  });
 }
 
-async function fetchWeather() {
-  setStatus('Gegevens ophalen...', 'info');
-  toggleLoading(true);
+function renderChecklist() {
+  checklistItems.forEach((item) => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    listElement?.appendChild(li);
+  });
+}
+
+async function copyText(text, successMessage) {
+  if (!navigator.clipboard) {
+    setStatus('Clipboard API niet beschikbaar op dit apparaat/browser.', 'error');
+    return;
+  }
 
   try {
-    const response = await fetch(ENDPOINT);
-    if (!response.ok) {
-      throw new Error('Kon de weergegevens niet ophalen.');
-    }
-
-    const data = await response.json();
-    if (!data?.current) {
-      throw new Error('Onverwacht antwoord van de weerdienst.');
-    }
-
-    renderWeather(data.current, data.timezone_abbreviation);
-    setStatus('Gegevens bijgewerkt.');
+    await navigator.clipboard.writeText(text);
+    setStatus(successMessage, 'success');
   } catch (error) {
-    console.error('Weer ophalen mislukt:', error);
-    setStatus(error.message || 'Er ging iets mis bij het laden van het weer.', 'error');
-  } finally {
-    toggleLoading(false);
+    console.error('Kopiëren mislukt', error);
+    setStatus('Kopiëren mislukt. Geef toestemming voor klembordtoegang.', 'error');
   }
 }
 
-function renderWeather(current, timezoneAbbreviation) {
-  const temperature = formatNumber(current.temperature_2m, '°C');
-  const rain = formatNumber(current.rain ?? current.precipitation, 'mm');
-  const windSpeed = formatNumber(current.wind_speed_10m, 'km/u');
-  const windDirection = formatDirection(current.wind_direction_10m);
-
-  temperatureValue.textContent = temperature;
-  rainValue.textContent = rain;
-  windSpeedValue.textContent = windSpeed;
-  windDirectionValue.textContent = windDirection;
-
-  const timestamp = current.time ? new Date(current.time) : new Date();
-  const formatter = new Intl.DateTimeFormat('nl-NL', {
-    hour: '2-digit',
-    minute: '2-digit',
-    weekday: 'long',
-    timeZone: dataTimeZone(timezoneAbbreviation),
-  });
-  lastUpdated.textContent = `Laatste update: ${formatter.format(timestamp)}`;
-}
-
-function dataTimeZone(abbreviation) {
-  if (!abbreviation) return undefined;
-  return ['CEST', 'CET'].includes(abbreviation) ? 'Europe/Amsterdam' : undefined;
-}
-
-function formatNumber(value, unit) {
-  if (typeof value !== 'number' || Number.isNaN(value)) {
-    return `-- ${unit}`;
-  }
-  const rounded = Math.round(value * 10) / 10;
-  return `${rounded} ${unit}`;
-}
-
-function formatDirection(degrees) {
-  if (typeof degrees !== 'number' || Number.isNaN(degrees)) {
-    return '--';
-  }
-
-  const directions = ['N', 'NO', 'O', 'ZO', 'Z', 'ZW', 'W', 'NW'];
-  const index = Math.round(degrees / 45) % directions.length;
-  const label = directions[index];
-  return `${label} (${Math.round(degrees)}°)`;
-}
-
-function setStatus(message, type = 'info') {
-  statusLine.textContent = message;
-  statusLine.dataset.type = type;
-}
-
-function toggleLoading(isLoading) {
-  refreshButton.disabled = isLoading;
-  refreshButton.textContent = isLoading ? 'Laden...' : 'Vernieuw';
+function setStatus(message, type) {
+  statusElement.textContent = message;
+  statusElement.dataset.type = type;
 }
