@@ -2,61 +2,57 @@
 <html lang="nl">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Weer in Zeewolde</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>LLM Knowledge Base Starter</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header class="top-bar">
+    <header class="hero">
       <div class="container">
-        <p class="eyebrow">Live weeroverzicht</p>
-        <h1>Weer in Zeewolde</h1>
-        <p>
-          Controleer in één oogopslag de huidige temperatuur, neerslag en wind voor Zeewolde. De gegevens
-          worden automatisch opgehaald bij Open-Meteo en regelmatig bijgewerkt.
+        <p class="eyebrow">Voor beginners</p>
+        <h1>Zo bouw je een LLM Knowledge Base (ook op iPhone 14 Pro Max)</h1>
+        <p class="lead">
+          Geen jargon, wel stappen: eerst lokaal draaien, daarna private zetten, daarna pas uitbreiden.
         </p>
       </div>
     </header>
 
-    <main class="container">
-      <section class="panel panel--wide" aria-live="polite">
-        <div class="panel__header">
-          <div>
-            <p class="eyebrow">Huidige omstandigheden</p>
-            <h2>Nu in Zeewolde</h2>
-            <p id="last-updated" class="muted">Laden...</p>
-          </div>
-          <button id="refresh" class="ghost-button" type="button">Vernieuw</button>
+    <main class="container stack">
+      <section class="panel" aria-labelledby="quickstart-title">
+        <h2 id="quickstart-title">Snelle start (5 stappen)</h2>
+        <ol id="quickstart-list" class="timeline"></ol>
+      </section>
+
+      <section class="panel" aria-labelledby="private-title">
+        <div class="panel-head">
+          <h2 id="private-title">Private zetten (aanrader)</h2>
+          <span id="private-pill" class="pill" aria-live="polite">Mode laden...</span>
         </div>
+        <ol id="private-list" class="timeline"></ol>
+      </section>
 
-        <div class="weather-grid">
-          <div class="weather-card" id="temperature-card">
-            <p class="eyebrow">Temperatuur</p>
-            <h3 class="value" id="temperature-value">--°C</h3>
-            <p class="muted">Gemeten op 2 meter hoogte</p>
-          </div>
-
-          <div class="weather-card" id="precip-card">
-            <p class="eyebrow">Regen</p>
-            <h3 class="value" id="rain-value">-- mm</h3>
-            <p class="muted">Instantane regenintensiteit</p>
-          </div>
-
-          <div class="weather-card" id="wind-card">
-            <p class="eyebrow">Wind</p>
-            <h3 class="value" id="wind-speed">-- km/u</h3>
-            <p class="muted"><span id="wind-direction">--</span></p>
-          </div>
+      <section class="panel" aria-labelledby="iphone-title">
+        <div class="panel-head">
+          <h2 id="iphone-title">iPhone checklist</h2>
+          <button id="copy-checklist" class="button" type="button">Kopieer</button>
         </div>
+        <ul id="iphone-checklist" class="checklist"></ul>
+        <p id="status" class="muted" role="status" aria-live="polite"></p>
+      </section>
 
-        <div class="notice" id="status" role="status"></div>
+      <section class="panel" aria-labelledby="tree-title">
+        <div class="panel-head">
+          <h2 id="tree-title">Starter mappenstructuur</h2>
+          <button id="copy-tree" class="button button--ghost" type="button">Kopieer</button>
+        </div>
+        <pre id="tree-output" class="code"></pre>
       </section>
     </main>
 
-    <footer class="footer">
-      <div class="container">
-        <p class="muted">Bron: Open-Meteo · Locatie: Zeewolde, Nederland (52.33°N, 5.54°E)</p>
-      </div>
+    <footer class="container footer">
+      <p>Tip: begin met 20 documenten, laat de LLM pas daarna zelf linting en uitbreidingen doen.</p>
     </footer>
 
     <script src="app.js" type="module"></script>

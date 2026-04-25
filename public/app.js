@@ -1,97 +1,126 @@
-const statusLine = document.querySelector('#status');
-const temperatureValue = document.querySelector('#temperature-value');
-const rainValue = document.querySelector('#rain-value');
-const windSpeedValue = document.querySelector('#wind-speed');
-const windDirectionValue = document.querySelector('#wind-direction');
-const lastUpdated = document.querySelector('#last-updated');
-const refreshButton = document.querySelector('#refresh');
+const quickstartSteps = [
+  'Installeer Node.js 18+ en maak een lege map voor je kennisbank.',
+  'Zet je bronbestanden in raw/ (artikelen, papers, screenshots, datasets).',
+  'Start deze app met npm start en controleer http://localhost:3000.',
+  'Laat een LLM script markdown-pagina\'s schrijven in wiki/ (met backlinks).',
+  'Gebruik ask/lint scripts om antwoorden en verbeteringen terug te schrijven.',
+];
 
-const ENDPOINT =
-  'https://api.open-meteo.com/v1/forecast?latitude=52.33&longitude=5.54&current=temperature_2m,precipitation,rain,wind_speed_10m,wind_direction_10m&timezone=auto';
+const privateSteps = [
+  'Maak een .env bestand met PRIVATE_MODE=true.',
+  'Voeg BASIC_AUTH_USER en BASIC_AUTH_PASSWORD toe (sterk wachtwoord).',
+  'Start opnieuw: npm start. Daarna vraagt de browser om in te loggen.',
+  'Zet er HTTPS voor (bijv. Caddy, Cloudflare Tunnel of Tailscale).',
+  'Deel alleen met jezelf of je team; houd je API key server-side.',
+];
+
+const checklistItems = [
+  'Voeg de site toe aan iPhone homescreen (Safari → Deel → Zet op beginscherm).',
+  'Gebruik een duidelijk domein, bijvoorbeeld kb.jouwdomein.nl.',
+  'Houd tekstblokken kort en gebruik grote klikbare knoppen.',
+  'Sla output op in markdown zodat alles doorzoekbaar blijft.',
+  'Maak dagelijks een backup/snapshot van je knowledge base.',
+];
+
+const folderTree = `knowledge-base/
+├─ raw/
+│  ├─ articles/
+│  ├─ papers/
+│  ├─ datasets/
+│  └─ images/
+├─ wiki/
+│  ├─ concepts/
+│  ├─ entities/
+│  ├─ timelines/
+│  └─ index.md
+├─ outputs/
+│  ├─ answers/
+│  ├─ slides/
+│  └─ plots/
+├─ tools/
+│  ├─ ingest.js
+│  ├─ compile.js
+│  ├─ ask.js
+│  └─ lint.js
+└─ logs/`;
+
+const quickstartListElement = document.querySelector('#quickstart-list');
+const privateListElement = document.querySelector('#private-list');
+const checklistElement = document.querySelector('#iphone-checklist');
+const treeElement = document.querySelector('#tree-output');
+const privatePillElement = document.querySelector('#private-pill');
+const statusElement = document.querySelector('#status');
+const copyChecklistButton = document.querySelector('#copy-checklist');
+const copyTreeButton = document.querySelector('#copy-tree');
 
 init();
 
-function init() {
-  refreshButton?.addEventListener('click', fetchWeather);
-  fetchWeather();
+async function init() {
+  renderList(quickstartListElement, quickstartSteps, 'ol');
+  renderList(privateListElement, privateSteps, 'ol');
+  renderList(checklistElement, checklistItems, 'ul');
+  treeElement.textContent = folderTree;
+
+  copyChecklistButton?.addEventListener('click', async () => {
+    const text = checklistItems.map((item, index) => `${index + 1}. ${item}`).join('\n');
+    await copyText(text, 'Checklist gekopieerd.');
+  });
+
+  copyTreeButton?.addEventListener('click', async () => {
+    await copyText(folderTree, 'Mappenstructuur gekopieerd.');
+  });
+
+  await updatePrivateModePill();
 }
 
-async function fetchWeather() {
-  setStatus('Gegevens ophalen...', 'info');
-  toggleLoading(true);
+function renderList(element, items) {
+  if (!element) return;
+  items.forEach((item) => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    element.appendChild(li);
+  });
+}
+
+async function updatePrivateModePill() {
+  if (!privatePillElement) return;
 
   try {
-    const response = await fetch(ENDPOINT);
+    const response = await fetch('/api/config');
     if (!response.ok) {
-      throw new Error('Kon de weergegevens niet ophalen.');
+      throw new Error('config laden mislukt');
     }
 
     const data = await response.json();
-    if (!data?.current) {
-      throw new Error('Onverwacht antwoord van de weerdienst.');
+    if (data.privateMode) {
+      privatePillElement.textContent = 'PRIVATE MODE: aan';
+      privatePillElement.dataset.mode = 'on';
+    } else {
+      privatePillElement.textContent = 'PRIVATE MODE: uit';
+      privatePillElement.dataset.mode = 'off';
     }
-
-    renderWeather(data.current, data.timezone_abbreviation);
-    setStatus('Gegevens bijgewerkt.');
   } catch (error) {
-    console.error('Weer ophalen mislukt:', error);
-    setStatus(error.message || 'Er ging iets mis bij het laden van het weer.', 'error');
-  } finally {
-    toggleLoading(false);
+    privatePillElement.textContent = 'Private mode onbekend';
+    privatePillElement.dataset.mode = 'unknown';
   }
 }
 
-function renderWeather(current, timezoneAbbreviation) {
-  const temperature = formatNumber(current.temperature_2m, '°C');
-  const rain = formatNumber(current.rain ?? current.precipitation, 'mm');
-  const windSpeed = formatNumber(current.wind_speed_10m, 'km/u');
-  const windDirection = formatDirection(current.wind_direction_10m);
-
-  temperatureValue.textContent = temperature;
-  rainValue.textContent = rain;
-  windSpeedValue.textContent = windSpeed;
-  windDirectionValue.textContent = windDirection;
-
-  const timestamp = current.time ? new Date(current.time) : new Date();
-  const formatter = new Intl.DateTimeFormat('nl-NL', {
-    hour: '2-digit',
-    minute: '2-digit',
-    weekday: 'long',
-    timeZone: dataTimeZone(timezoneAbbreviation),
-  });
-  lastUpdated.textContent = `Laatste update: ${formatter.format(timestamp)}`;
-}
-
-function dataTimeZone(abbreviation) {
-  if (!abbreviation) return undefined;
-  return ['CEST', 'CET'].includes(abbreviation) ? 'Europe/Amsterdam' : undefined;
-}
-
-function formatNumber(value, unit) {
-  if (typeof value !== 'number' || Number.isNaN(value)) {
-    return `-- ${unit}`;
-  }
-  const rounded = Math.round(value * 10) / 10;
-  return `${rounded} ${unit}`;
-}
-
-function formatDirection(degrees) {
-  if (typeof degrees !== 'number' || Number.isNaN(degrees)) {
-    return '--';
+async function copyText(text, successMessage) {
+  if (!navigator.clipboard) {
+    setStatus('Clipboard API niet beschikbaar op dit apparaat/browser.', 'error');
+    return;
   }
 
-  const directions = ['N', 'NO', 'O', 'ZO', 'Z', 'ZW', 'W', 'NW'];
-  const index = Math.round(degrees / 45) % directions.length;
-  const label = directions[index];
-  return `${label} (${Math.round(degrees)}°)`;
+  try {
+    await navigator.clipboard.writeText(text);
+    setStatus(successMessage, 'success');
+  } catch (error) {
+    console.error('Kopiëren mislukt', error);
+    setStatus('Kopiëren mislukt. Geef toestemming voor klembordtoegang.', 'error');
+  }
 }
 
-function setStatus(message, type = 'info') {
-  statusLine.textContent = message;
-  statusLine.dataset.type = type;
-}
-
-function toggleLoading(isLoading) {
-  refreshButton.disabled = isLoading;
-  refreshButton.textContent = isLoading ? 'Laden...' : 'Vernieuw';
+function setStatus(message, type) {
+  statusElement.textContent = message;
+  statusElement.dataset.type = type;
 }

@@ -8,10 +8,28 @@ const publicDir = path.join(__dirname, '..', 'public');
 loadEnvFile();
 
 const DEFAULT_MODEL = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
+const PRIVATE_MODE_ENABLED = process.env.PRIVATE_MODE === 'true';
+const BASIC_AUTH_USER = process.env.BASIC_AUTH_USER || '';
+const BASIC_AUTH_PASSWORD = process.env.BASIC_AUTH_PASSWORD || '';
 
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
+
+    if (PRIVATE_MODE_ENABLED && !isAuthorized(req)) {
+      requestAuthorization(res);
+      return;
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/config') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(
+        JSON.stringify({
+          privateMode: PRIVATE_MODE_ENABLED,
+        })
+      );
+      return;
+    }
 
     if (req.method === 'POST' && url.pathname === '/api/chat') {
       await handleChatRequest(req, res);
@@ -35,6 +53,9 @@ const server = http.createServer(async (req, res) => {
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`ChatGPT relay server listening on http://localhost:${PORT}`);
+  if (PRIVATE_MODE_ENABLED) {
+    console.log('Private mode is enabled. Basic auth is required for all routes.');
+  }
 });
 
 function loadEnvFile() {
@@ -63,6 +84,43 @@ function loadEnvFile() {
       console.warn('Could not read .env file:', error.message);
     }
   }
+}
+
+function isAuthorized(req) {
+  if (!BASIC_AUTH_USER || !BASIC_AUTH_PASSWORD) {
+    return false;
+  }
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Basic ')) {
+    return false;
+  }
+
+  const encoded = authHeader.slice('Basic '.length);
+  let decoded;
+  try {
+    decoded = Buffer.from(encoded, 'base64').toString('utf8');
+  } catch (error) {
+    return false;
+  }
+
+  const separator = decoded.indexOf(':');
+  if (separator === -1) {
+    return false;
+  }
+
+  const username = decoded.slice(0, separator);
+  const password = decoded.slice(separator + 1);
+
+  return username === BASIC_AUTH_USER && password === BASIC_AUTH_PASSWORD;
+}
+
+function requestAuthorization(res) {
+  res.writeHead(401, {
+    'Content-Type': 'text/plain; charset=utf-8',
+    'WWW-Authenticate': 'Basic realm="Knowledge Base"',
+  });
+  res.end('Authenticatie vereist.');
 }
 
 async function handleChatRequest(req, res) {
